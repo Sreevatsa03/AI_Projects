@@ -495,11 +495,12 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
     x, y = position
+    foodList = foodGrid.asList()
     heuristic = 0
     
     mazeDist = []
-    if foodGrid.count() != 0:
-        for foods in foodGrid.asList():
+    if len(foodList):
+        for foods in foodList:
             mazeDist.append(mazeDistance(position, foods, problem.startingGameState))
 
         heuristic = max(mazeDist)
