@@ -309,7 +309,7 @@ class CornersProblem(search.SearchProblem):
 
         if current in self.corners and current not in visited:
             visited.append(current)
-        if len(visited)==4:
+        if len(visited) == 4:
             return True
         else:
             return False
@@ -386,19 +386,18 @@ def cornersHeuristic(state, problem):
     visited = state[1]
     x, y = current
     unvisited = []
-    dist = []
+    mazeDist = []
     heuristic = 0
 
     for corner in corners:
         if corner not in visited:
             unvisited.append(corner)
 
-    if unvisited != []:
+    if len(unvisited):
         for corner in unvisited:
-            x_c, y_c = corner
-            dist.append(mazeDistance(current, corner, problem.game_state))
+            mazeDist.append(mazeDistance(current, corner, problem.game_state))
 
-        heuristic = max(dist)
+        heuristic = max(mazeDist)
 
     return heuristic
 
