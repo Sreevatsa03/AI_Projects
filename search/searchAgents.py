@@ -288,7 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.game_state = startingGameState
+        self.gameState = startingGameState
 
     def getStartState(self):
         """
@@ -395,10 +395,9 @@ def cornersHeuristic(state, problem):
 
     if len(unvisited):
         for corner in unvisited:
-            mazeDist.append(mazeDistance(current, corner, problem.game_state))
+            mazeDist.append(mazeDistance(current, corner, problem.gameState))
 
         heuristic = max(mazeDist)
-
     return heuristic
 
 class AStarCornersAgent(SearchAgent):
