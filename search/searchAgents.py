@@ -396,8 +396,7 @@ def cornersHeuristic(state, problem):
     if unvisited != []:
         for corner in unvisited:
             x_c, y_c = corner
-            temp_dist = mazeDistance(current, corner, problem.game_state)
-            dist.append(temp_dist)
+            dist.append(mazeDistance(current, corner, problem.game_state))
 
         heuristic = max(dist)
 
@@ -495,7 +494,16 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    x, y = position
+    heuristic = 0
+    
+    mazeDist = []
+    if foodGrid.count() != 0:
+        for foods in foodGrid.asList():
+            mazeDist.append(mazeDistance(position, foods, problem.startingGameState))
+
+        heuristic = max(mazeDist)
+    return heuristic
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
