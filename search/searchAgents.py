@@ -381,21 +381,30 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    current, visited = state
-    x, y = current
+    position, visited = state
     unvisited = []
-    mazeDist = []
+    dist = []
     heuristic = 0
 
     for corner in corners:
         if corner not in visited:
             unvisited.append(corner)
 
-    if len(unvisited):
-        for corner in unvisited:
-            mazeDist.append(mazeDistance(current, corner, problem.gameState))
+    from util import manhattanDistance
+    while unvisited:
+        dist, corner = min([(manhattanDistance(position, corner), corner) for corner in unvisited])
 
-        heuristic = max(mazeDist)
+        heuristic += dist
+        position = corner
+        unvisited.remove(corner)
+
+    "*** MAZE DISTANCE: WORSE THAN MANHATTAN WITH MORE NODES EXPANDED AND MORE RUN TIME BUT WAS MY FIRST ATTEMPT ***"
+    # if len(unvisited):
+    #     for corner in unvisited:
+    #         dist.append(mazeDistance(position, corner, problem.gameState))
+
+    #     heuristic = max(dist)
+
     return heuristic
 
 class AStarCornersAgent(SearchAgent):
@@ -491,14 +500,14 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
     foodList = foodGrid.asList()
+    dist = []
     heuristic = 0
     
-    mazeDist = []
     if len(foodList):
         for foods in foodList:
-            mazeDist.append(mazeDistance(position, foods, problem.startingGameState))
+            dist.append(mazeDistance(position, foods, problem.startingGameState))
 
-        heuristic = max(mazeDist)
+        heuristic = max(dist)
     return heuristic
 
 class ClosestDotSearchAgent(SearchAgent):
