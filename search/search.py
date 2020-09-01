@@ -82,25 +82,14 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 
-    print "Start:", problem.getStartState()
-    print "Is the start pos goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    print "Start:", problemStart
+    print "Is the start pos goal?", problem.isGoalState(problemStart)
+    print "Start's successors:", problem.getSuccessors(problemStart)
     """
     "*** YOUR CODE HERE ***"
 
     fringe = util.Stack()
-    visited = []
-    actions = []
-    fringe.push((problem.getStartState(), actions, 0))
-
-    while not fringe.isEmpty():
-    	successor, action, cost = fringe.pop()
-    	if problem.isGoalState(successor):
-    		return action
-    	if successor not in visited:
-    		visited.append(successor)
-    		for pos, direction, costs in problem.getSuccessors(successor):
-    		    fringe.push((pos, action + [direction], costs))
+    return generalSearch(problem, True, nullHeuristic, fringe)
 
     util.raiseNotDefined()
 
@@ -109,19 +98,8 @@ def breadthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
 
     fringe = util.Queue()
-    visited = []
-    actions = []
-    fringe.push((problem.getStartState(), actions, 0))
-
-    while not fringe.isEmpty():
-        successor, action, cost = fringe.pop()
-        if problem.isGoalState(successor):
-            return action
-        if successor not in visited:
-            visited.append(successor)
-            for pos, direction, costs in problem.getSuccessors(successor):
-    		    fringe.push((pos, action + [direction], costs))
-                
+    return generalSearch(problem, True, nullHeuristic, fringe)
+    
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -129,20 +107,7 @@ def uniformCostSearch(problem):
     "*** YOUR CODE HERE ***"
 
     fringe = util.PriorityQueue()
-    closedList = util.Counter()
-    visited = []
-    actions = []
-    fringe.push((problem.getStartState(), actions, 0), closedList[str(problem.getStartState()[0])])
-
-    while not fringe.isEmpty():
-        successor, action, cost = fringe.pop()
-        if problem.isGoalState(successor):
-            return action
-        if successor not in visited:
-            visited.append(successor)
-            for pos, direction, costs in problem.getSuccessors(successor):
-                closedList[str(pos)] = problem.getCostOfActions(action + [direction])
-                fringe.push((pos, action + [direction], costs), closedList[str(pos)])
+    return generalSearch(problem, False, nullHeuristic, fringe)
 
     util.raiseNotDefined()
 
@@ -158,11 +123,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
 
     fringe = util.PriorityQueue()
-    closedList = util.Counter()
+    return generalSearch(problem, False, heuristic, fringe)
+
+    util.raiseNotDefined()
+
+def generalSearch(problem, search, heuristic, fringe):
     visited = []
     actions = []
-    closedList[str(problem.getStartState()[0])] += heuristic(problem.getStartState(), problem)
-    fringe.push((problem.getStartState(), actions, 0), closedList[str(problem.getStartState()[0])])
+    problemStart = problem.getStartState()
+
+    if search:
+        fringe.push((problemStart, actions, 0))
+    else:
+        closedList = util.Counter()
+        closedList[str(problemStart[0])] += heuristic(problemStart, problem)
+        fringe.push((problemStart, actions, 0), closedList[str(problemStart[0])])
 
     while not fringe.isEmpty():
         successor, action, cost = fringe.pop()
@@ -171,10 +146,11 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if successor not in visited:
             visited.append(successor)
             for pos, direction, costs in problem.getSuccessors(successor):
-                closedList[str(pos)] = problem.getCostOfActions(action + [direction]) + heuristic(pos, problem)
-                fringe.push((pos, action + [direction], costs), closedList[str(pos)])
-
-    util.raiseNotDefined()
+                if search:
+                    fringe.push((pos, action + [direction], costs))
+                else:
+                    closedList[str(pos)] = problem.getCostOfActions(action + [direction]) + heuristic(pos, problem)
+                    fringe.push((pos, action + [direction], costs), closedList[str(pos)])
 
 
 # Abbreviations
