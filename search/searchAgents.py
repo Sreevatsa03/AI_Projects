@@ -507,6 +507,9 @@ def foodHeuristic(state, problem):
         for foods in foodList:
             dist.append(mazeDistance(position, foods, problem.startingGameState))
 
+            "*** MANHATTAN DISTANCE: RUNS FASTER BUT ONLY GETS 3/4 POINTS ***"
+            # dist.append(util.manhattanDistance(position, foods))
+
         heuristic = max(dist)
     return heuristic
 
