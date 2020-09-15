@@ -149,7 +149,40 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = gameState.getLegalActions(self.index)
+        max = float("-inf")
+        bestAction = None
+        depthMax = self.depth * gameState.getNumAgents()
+        for action in actions:
+			state = gameState.generateSuccessor(self.index, action)
+			score = value(state, 1, depthMax, self.evaluationFunction, self.index)
+			if score > max: 
+				max = score
+				bestAction = action
+        return bestAction
+        
+def value(gameState, depth, depthMax, evaluationFunction, agentIndex):
+	if depth == depthMax or gameState.isWin() or gameState.isLose():
+		return evaluationFunction(gameState)
+	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
+	if nextIndex == 0:
+		return minMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, True)
+	else: 
+		return minMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, False)
+
+def minMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax):
+	if isMax:
+		val = float("-inf")
+	else:
+		val = float("inf")
+	actions = gameState.getLegalActions(agentIndex)
+	for action in actions:
+		state = gameState.generateSuccessor(agentIndex,action)
+		if isMax:
+			val = max(val, value(state, depth, depthMax, evaluationFunction, agentIndex))
+		else:
+			val = min(val, value(state, depth, depthMax, evaluationFunction, agentIndex))
+	return val
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -161,7 +194,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
