@@ -245,7 +245,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
           Returns the expectimax action using self.depth and self.evaluationFunction
 
-          All ghosts should be modeled as choosing uniformly at random from their
+          All ghostStates should be modeled as choosing uniformly at random from their
           legal moves.
         """
         "*** YOUR CODE HERE ***"
@@ -294,7 +294,34 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    return betterEval(currentGameState)
+
+def betterEval(currentGameState):
+	pos = currentGameState.getPacmanPosition()
+	foods = currentGameState.getFood().asList()
+	ghostStates = currentGameState.getGhostStates()
+	score = currentGameState.getScore()
+
+	foodWeight = 10.0
+	ghostWeight = 10.0
+	scaredGhostWeight = 100.0
+
+	ghostDist = 0
+	for ghost in ghostStates:
+		ghostDistTemp = manhattanDistance(pos, ghost.getPosition())
+		if ghostDistTemp > 0:
+			if ghost.scaredTimer > 0:
+				ghostDist += scaredGhostWeight / ghostDistTemp
+			else:
+				ghostDist -= ghostWeight / ghostDistTemp
+			score += ghostDist
+
+	foodDist = [manhattanDistance(pos, food) for food in foods]
+	if len(foodDist):
+		score += foodWeight / min(foodDist)
+
+	return score
 
 # Abbreviation
 better = betterEvaluationFunction
