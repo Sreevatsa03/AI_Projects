@@ -135,16 +135,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action from the current gameState using self.depth
           and self.evaluationFunction.
-
           Here are some method calls that might be useful when implementing minimax.
-
           gameState.getLegalActions(agentIndex):
             Returns a list of legal actions for an agent
             agentIndex=0 means Pacman, ghosts are >= 1
-
           gameState.generateSuccessor(agentIndex, action):
             Returns the successor game state after an agent takes an action
-
           gameState.getNumAgents():
             Returns the total number of agents in the game
         """
@@ -155,33 +151,33 @@ class MinimaxAgent(MultiAgentSearchAgent):
         depthMax = self.depth * gameState.getNumAgents()
         for action in actions:
 			state = gameState.generateSuccessor(self.index, action)
-			score = value(state, 1, depthMax, self.evaluationFunction, self.index)
+			score = miniMaxValue(state, 1, depthMax, self.evaluationFunction, self.index)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def value(gameState, depth, depthMax, evaluationFunction, agentIndex):
+def miniMaxValue(gameState, depth, depthMax, evaluationFunction, agentIndex):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
 	if nextIndex == 0:
-		return exMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, True)
+		return minMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, True)
 	else: 
-		return exMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, False)
+		return minMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, False)
 
-def exMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax):
+def minMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax):
 	if isMax:
 		val = float("-inf")
 	else:
 		val = float("inf")
 	actions = gameState.getLegalActions(agentIndex)
 	for action in actions:
-		state = gameState.generateSuccessor(agentIndex,action)
+		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, value(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = max(val, miniMaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
 		else:
-			val = min(val, value(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = min(val, miniMaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
 	return val
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -201,36 +197,36 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         beta = float("inf")
         for action in actions:          
 			state = gameState.generateSuccessor(self.index, action)
-			score = value(state, 1, depthMax, self.evaluationFunction, self.index, max, beta)
+			score = alphaBetaValue(state, 1, depthMax, self.evaluationFunction, self.index, max, beta)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def value(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta):
+def alphaBetaValue(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
 	if nextIndex == 0:
-		return exMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, alpha, beta, True)
+		return alBeMinMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, alpha, beta, True)
 	else: 
-		return exMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, alpha, beta, False)
+		return alBeMinMaxVal(gameState, depth + 1, depthMax, evaluationFunction, nextIndex, alpha, beta, False)
 
-def exMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta, isMax):
+def alBeMinMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta, isMax):
 	if isMax:
 		val = float("-inf")
 	else:
 		val = float("inf")
 	actions = gameState.getLegalActions(agentIndex)
 	for action in actions:
-		state = gameState.generateSuccessor(agentIndex,action)
+		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, value(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
+			val = max(val, alphaBetaValue(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
 			if val > beta:
 				return val
 			alpha = max(alpha, val)
 		else:
-			val = min(val, value(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
+			val = min(val, alphaBetaValue(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
 			if val < alpha:
 				return val
 			beta = min(beta, val)
@@ -255,13 +251,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         depthMax = self.depth * gameState.getNumAgents()
         for action in actions:
 			state = gameState.generateSuccessor(self.index, action)
-			score = value(state, 1, depthMax, self.evaluationFunction, self.index)
+			score = expectimaxValue(state, 1, depthMax, self.evaluationFunction, self.index)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def value(gameState, depth, depthMax, evaluationFunction, agentIndex):
+def expectimaxValue(gameState, depth, depthMax, evaluationFunction, agentIndex):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
@@ -277,11 +273,11 @@ def exMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax):
 		val = []
 	actions = gameState.getLegalActions(agentIndex)
 	for action in actions:
-		state = gameState.generateSuccessor(agentIndex,action)
+		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, value(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = max(val, expectimaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
 		else:
-			val .append(float(value(state, depth, depthMax, evaluationFunction, agentIndex)))
+			val .append(float(expectimaxValue(state, depth, depthMax, evaluationFunction, agentIndex)))
 	if isMax == False:
 		val = sum(val)/float(len(val))
 	return val
