@@ -151,13 +151,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         depthMax = self.depth * gameState.getNumAgents()
         for action in actions:
 			state = gameState.generateSuccessor(self.index, action)
-			score = miniMaxValue(state, 1, depthMax, self.evaluationFunction, self.index)
+			score = finalValueMinMax(state, 1, depthMax, self.evaluationFunction, self.index)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def miniMaxValue(gameState, depth, depthMax, evaluationFunction, agentIndex):
+def finalValueMinMax(gameState, depth, depthMax, evaluationFunction, agentIndex):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
@@ -175,9 +175,9 @@ def minMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax)
 	for action in actions:
 		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, miniMaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = max(val, finalValueMinMax(state, depth, depthMax, evaluationFunction, agentIndex))
 		else:
-			val = min(val, miniMaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = min(val, finalValueMinMax(state, depth, depthMax, evaluationFunction, agentIndex))
 	return val
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -197,13 +197,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         beta = float("inf")
         for action in actions:          
 			state = gameState.generateSuccessor(self.index, action)
-			score = alphaBetaValue(state, 1, depthMax, self.evaluationFunction, self.index, max, beta)
+			score = finalValueAlBeMinMax(state, 1, depthMax, self.evaluationFunction, self.index, max, beta)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def alphaBetaValue(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta):
+def finalValueAlBeMinMax(gameState, depth, depthMax, evaluationFunction, agentIndex, alpha, beta):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
@@ -221,12 +221,12 @@ def alBeMinMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, al
 	for action in actions:
 		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, alphaBetaValue(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
+			val = max(val, finalValueAlBeMinMax(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
 			if val > beta:
 				return val
 			alpha = max(alpha, val)
 		else:
-			val = min(val, alphaBetaValue(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
+			val = min(val, finalValueAlBeMinMax(state, depth, depthMax, evaluationFunction, agentIndex, alpha, beta))
 			if val < alpha:
 				return val
 			beta = min(beta, val)
@@ -251,13 +251,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         depthMax = self.depth * gameState.getNumAgents()
         for action in actions:
 			state = gameState.generateSuccessor(self.index, action)
-			score = expectimaxValue(state, 1, depthMax, self.evaluationFunction, self.index)
+			score = finalValueExMax(state, 1, depthMax, self.evaluationFunction, self.index)
 			if score > max: 
 				max = score
 				bestAction = action
         return bestAction
         
-def expectimaxValue(gameState, depth, depthMax, evaluationFunction, agentIndex):
+def finalValueExMax(gameState, depth, depthMax, evaluationFunction, agentIndex):
 	if depth == depthMax or gameState.isWin() or gameState.isLose():
 		return evaluationFunction(gameState)
 	nextIndex = (agentIndex + 1) % gameState.getNumAgents()
@@ -275,9 +275,9 @@ def exMaxVal(gameState, depth, depthMax, evaluationFunction, agentIndex, isMax):
 	for action in actions:
 		state = gameState.generateSuccessor(agentIndex, action)
 		if isMax:
-			val = max(val, expectimaxValue(state, depth, depthMax, evaluationFunction, agentIndex))
+			val = max(val, finalValueExMax(state, depth, depthMax, evaluationFunction, agentIndex))
 		else:
-			val .append(float(expectimaxValue(state, depth, depthMax, evaluationFunction, agentIndex)))
+			val.append(float(finalValueExMax(state, depth, depthMax, evaluationFunction, agentIndex)))
 	if isMax == False:
 		val = sum(val)/float(len(val))
 	return val
@@ -291,12 +291,13 @@ def betterEvaluationFunction(currentGameState):
     """
     "*** YOUR CODE HERE ***"
 
+    """I had to make a separate function and call that instead of just writing it in here because I kept getting a 'IndentationError: unexpected indent'"""
     return betterEval(currentGameState)
 
 def betterEval(currentGameState):
-	pos = currentGameState.getPacmanPosition()
-	foods = currentGameState.getFood().asList()
-	ghostStates = currentGameState.getGhostStates()
+	currPos = currentGameState.getPacmanPosition()
+	currFood = currentGameState.getFood()
+	currGhostStates = currentGameState.getGhostStates()
 	score = currentGameState.getScore()
 
 	foodWeight = 10.0
@@ -304,8 +305,8 @@ def betterEval(currentGameState):
 	scaredGhostWeight = 100.0
 
 	ghostDist = 0
-	for ghost in ghostStates:
-		ghostDistTemp = manhattanDistance(pos, ghost.getPosition())
+	for ghost in currGhostStates:
+		ghostDistTemp = manhattanDistance(currPos, ghost.getPosition())
 		if ghostDistTemp > 0:
 			if ghost.scaredTimer > 0:
 				ghostDist += scaredGhostWeight / ghostDistTemp
@@ -313,7 +314,7 @@ def betterEval(currentGameState):
 				ghostDist -= ghostWeight / ghostDistTemp
 			score += ghostDist
 
-	foodDist = [manhattanDistance(pos, food) for food in foods]
+	foodDist = [manhattanDistance(currPos, food) for food in currFood.asList()]
 	if len(foodDist):
 		score += foodWeight / min(foodDist)
 
