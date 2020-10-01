@@ -46,6 +46,14 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
 
+        for item in range(iterations):
+            copyValues = self.values.copy()
+            for state in self.mdp.getStates():
+                if self.mdp.isTerminal(state):
+                    continue
+                maxVal = max([self.getQValue(state, action) for action in self.mdp.getPossibleActions()])
+                copyValues[state] = maxVal
+
 
     def getValue(self, state):
         """
