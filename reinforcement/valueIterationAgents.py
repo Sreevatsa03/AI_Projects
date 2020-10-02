@@ -46,13 +46,15 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
 
-        for item in range(iterations):
-            copyValues = self.values.copy()
+        for i in range(0, iterations):
+            values = util.Counter()
             for state in self.mdp.getStates():
-                if self.mdp.isTerminal(state):
-                    continue
-                copyValues[state] = max([self.getQValue(state, action) for action in self.mdp.getPossibleActions()])
-            self.values = copyValues
+                action = self.computeActionFromValues(state)
+                if action is None:
+                    values[state] = 0
+                else:
+                    values[state] = self.computeQValueFromValues(state, action)
+            self.values = values
 
 
     def getValue(self, state):
@@ -69,13 +71,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         
-        return sum(prob * (self.mdp.getReward(state, action, nextState) + self.discount + self.values[nextState])
-                    for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action))
-        # qValue = 0
-        # for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
-        #     reward = self.mdp.getReward(state, action, nextState)
-        #     qValue += prob * (reward + self.discount + self.values[nextState])
-        # return qValue
+        return sum(prob * (self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState]) for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action))
 
     def computeActionFromValues(self, state):
         """
