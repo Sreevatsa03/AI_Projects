@@ -68,11 +68,10 @@ class QLearningAgent(ReinforcementAgent):
         maxQValue = float('-inf')
         for action in self.getLegalActions(state):
             maxQValue = max(maxQValue, self.getQValue(state, action))
-        # if maxQValue != float('-inf'):
-        #     return maxQValue
-        # else:
-        #     return 0.0
-        return maxQValue if maxQValue != float('-inf') else 0.0
+        if maxQValue != float('-inf'):
+            return maxQValue
+        else:
+            return 0.0
 
     def computeActionFromQValues(self, state):
         """
@@ -81,15 +80,16 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        
 
-        bestAction = None
-        bestQValue = float("-inf")
+        if len(self.getLegalActions(state)) == 0:
+            return None
+
+        bestQValue = self.computeValueFromQValues(state)
+        bestActionsList = []
         for action in self.getLegalActions(state):
-            if self.getQValue(state,action) > bestQValue:
-                bestQValue = self.getQValue(state,action)
-                bestAction = action
-
+            if bestQValue == self.getQValue(state, action):
+                bestActionsList.append(action)
+        bestAction = random.choice(bestActionsList)
         return bestAction
 
     def getAction(self, state):
@@ -190,14 +190,23 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        sum = 0
+        featureVector = self.featExtractor.getFeatures(state, action)
+        for i in featureVector.iterkeys():
+            sum += self.weights[i] * featureVector[i]
+        return sum
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        difference = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
+        featureVector = self.featExtractor.getFeatures(state,action)
+        for i in featureVector.iterkeys():
+            self.weights[i] += self.alpha * difference * featureVector[i]
 
     def final(self, state):
         "Called at the end of each game."
