@@ -74,15 +74,18 @@ class DiscreteDistribution(dict):
         >>> empty
         {}
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        total = float(self.total())
+        if total == 0.0: 
+            return
+        for key in self.keys():
+            self[key] = self[key] / total
 
     def sample(self):
         """
         Draw a random sample from the distribution and return the key, weighted
         by the values associated with each key.
 
-        >>> dist = DiscreteDistribution()
+        >>> dist = DiscreteDistribution(
         >>> dist['a'] = 1
         >>> dist['b'] = 2
         >>> dist['c'] = 2
@@ -98,8 +101,17 @@ class DiscreteDistribution(dict):
         >>> round(samples.count('d') * 1.0/N, 1)
         0.0
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        
+        if self.total() != 1:
+            self.normalize()
+        distribution = [i[1] for i in sorted(self.items())]
+        values = [i[0] for i in sorted(self.items())]
+        choice = random.random()
+        i, total = 0, distribution[0]
+        while choice > total:
+            i += 1
+            total += distribution[i]
+        return values[i]
 
 
 class InferenceModule:
