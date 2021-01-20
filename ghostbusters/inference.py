@@ -296,10 +296,14 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
 
-        self.beliefs.normalize()
+        beliefsCpy = self.beliefs.copy()
+
+        for pos in self.allPositions:
+            prob = self.getObservationProb(observation, gameState.getPacmanPosition(), pos, self.getJailPosition()) 
+            beliefsCpy[pos] = prob * self.beliefs[pos]
+        beliefsCpy.normalize()
+        self.beliefs = beliefsCpy
 
     def elapseTime(self, gameState):
         """
