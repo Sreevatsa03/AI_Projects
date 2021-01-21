@@ -105,10 +105,10 @@ class DiscreteDistribution(dict):
         
         cpy = self.copy()
         cpy.normalize()
-        sample, sum = random.random(), 0
-        for key, value in cpy.items():
-            sumValue += value
-            if sample < sum:
+        sample, valSum = random.random(), 0
+        for key, val in cpy.items():
+            valSum += val
+            if sample < valSum:
                 return key
 
 
