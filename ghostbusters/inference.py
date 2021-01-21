@@ -74,11 +74,12 @@ class DiscreteDistribution(dict):
         >>> empty
         {}
         """
-        total = float(self.total())
+
+        total = self.total()
         if total == 0.0: 
             return
-        for key in self.keys():
-            self[key] = self[key] / total
+        for key in self:
+            self[key] /= total
 
     def sample(self):
         """
@@ -102,16 +103,13 @@ class DiscreteDistribution(dict):
         0.0
         """
         
-        if self.total() != 1:
-            self.normalize()
-        distribution = [i[1] for i in sorted(self.items())]
-        values = [i[0] for i in sorted(self.items())]
-        choice = random.random()
-        i, total = 0, distribution[0]
-        while choice > total:
-            i += 1
-            total += distribution[i]
-        return values[i]
+        cpy = self.copy()
+        cpy.normalize()
+        sample, sum = random.random(), 0
+        for key, value in cpy.items():
+            sumValue += value
+            if sample < sum:
+                return key
 
 
 class InferenceModule:
