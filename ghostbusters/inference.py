@@ -103,13 +103,11 @@ class DiscreteDistribution(dict):
         0.0
         """
         
-        cpy = self.copy()
-        cpy.normalize()
-        sample, valSum = random.random(), 0
-        for key, val in cpy.items():
-            valSum += val
-            if sample < valSum:
+        sample, valSum = random.uniform(0, self.total()), 0
+        for key, val in self.items():
+            if valSum + val >= sample:
                 return key
+            valSum += val
 
 
 class InferenceModule:
