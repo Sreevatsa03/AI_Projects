@@ -3,3 +3,4 @@
 *.zip
 Workflow.md
 random/
+*/.ipynb_checkpoints/*
